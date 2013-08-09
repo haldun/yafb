@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html ng-app="formEditor">
+<head>
+  <title>Form Builder</title>
+  <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+</head>
+<body>
+  <div ng-controller="EditorController" class="container">
+    <h2 ng-bind="form.title"></h2>
+    <div class="panel" ng-bind="form.description"></div>
+
+    <div class="row">
+      <div class="col-lg-5" ng-controller="SettingsController">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default" ng-click="select('addField')">Add Field</button>
+          <button type="button" class="btn btn-default" ng-click="select('fieldSettings')">Field Info</button>
+          <button type="button" class="btn btn-default" ng-click="select('formSettings')">Form Info</button>
+        </div>
+
+        <br><br>
+
+        <div ng-show="currentTab == 'addField'" class="panel panel-success">
+          <div class="panel-heading">Add Field</div>
+          <div class="list-group">
+            <a class="list-group-item" ng-repeat="fieldType in fieldTypes" ng-click="addField(fieldType)" eat-click href="#">
+              <span ng-bind="fieldType.displayName"></span>
+            </a>
+          </div>
+        </div>
+
+        <div ng-if="editingField" class="panel panel-info" ng-controller="EditFieldController">
+          <div class="panel-heading">Field Settings</div>
+          <form>
+            <div class="form-group">
+              <label for="fieldLabel">Field label</label>
+              <textarea ng-model="editingField.label" class="form-control" id="fieldLabel"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="fieldType">Field type</label>
+              <select ng-model="editingField.type">
+                <option ng-repeat="type in fieldTypes"
+                        value="{{ type.name }}"
+                        ng-selected="type.name == editingField.type">{{ type.displayName }}</option>
+              </select>
+            </div>
+
+            <div ng-include="editTemplate"></div>
+          </form>
+        </div>
+
+        <div ng-show="currentTab == 'formSettings'" class="panel panel-primary">
+          <div class="panel-heading">Form Settings</div>
+          <form>
+            <div class="form-group">
+              <label for="formTitle">Form title</label>
+              <input ng-model="form.title" class="form-control" id="formTitle">
+            </div>
+
+            <div class="form-group">
+              <label for="formDescription">Description</label>
+              <textarea ng-model="form.description" class="form-control" id="formDescription"></textarea>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="list-group">
+          <a ng-repeat="field in form.fields"
+              ng-controller="PreviewFieldController"
+              class="list-group-item"
+              ng-click="editField(field)"
+              ng-class="{active: editingField === field}"
+              eat-click
+              href="">
+            <h4 class="list-group-item-heading" ng-bind="field.label"></h4>
+            <div ng-include="previewTemplate"></div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <br><br><br>
+    <pre ng-bind="form | json"></pre>
+  </div>
+
+  <!-- TextField -->
+
+  <script type="text/ng-template" id="TextFieldPreview">
+    <input class="form-control" disabled>
+  </script>
+
+  <script type="text/ng-template" id="TextFieldEdit">
+  </script>
+
+  <!-- TextareaField -->
+
+  <script type="text/ng-template" id="TextareaFieldPreview">
+    <textarea class="form-control" disabled></textarea>
+  </script>
+
+  <script type="text/ng-template" id="TextareaFieldEdit">
+  </script>
+
+  <!-- NumberField -->
+
+  <script type="text/ng-template" id="NumberFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="NumberFieldEdit">
+  </script>
+
+  <!-- CheckboxField -->
+
+  <script type="text/ng-template" id="CheckboxFieldPreview">
+    {{ field.choices }}
+    <div class="radio" ng-repeat="choice in field.choices">
+      <label>
+        <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>
+        {{ choice }}
+      </label>
+    </div>
+  </script>
+
+  <script type="text/ng-template" id="CheckboxFieldEdit">
+  </script>
+
+  <!-- RadioField -->
+
+  <script type="text/ng-template" id="RadioFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="RadioFieldEdit">
+  </script>
+
+  <!-- SelectField -->
+
+  <script type="text/ng-template" id="SelectFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="SelectFieldEdit">
+  </script>
+
+  <!-- ShortNameField -->
+
+  <script type="text/ng-template" id="ShortNameFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="ShortNameFieldEdit">
+  </script>
+
+  <!-- PhoneField -->
+
+  <script type="text/ng-template" id="PhoneFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="PhoneFieldEdit">
+  </script>
+
+  <!-- FileField -->
+
+  <script type="text/ng-template" id="FileFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="FileFieldEdit">
+  </script>
+
+  <!-- AddressField -->
+
+  <script type="text/ng-template" id="AddressFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="AddressFieldEdit">
+  </script>
+
+  <!-- DateField -->
+
+  <script type="text/ng-template" id="DateFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="DateFieldEdit">
+  </script>
+
+  <!-- EmailField -->
+
+  <script type="text/ng-template" id="EmailFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="EmailFieldEdit">
+  </script>
+
+  <!-- TimeField -->
+
+  <script type="text/ng-template" id="TimeFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="TimeFieldEdit">
+  </script>
+
+  <!-- URLField -->
+
+  <script type="text/ng-template" id="URLFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="URLFieldEdit">
+  </script>
+
+  <!-- MoneyField -->
+
+  <script type="text/ng-template" id="MoneyFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="MoneyFieldEdit">
+  </script>
+
+  <!-- LikertField -->
+
+  <script type="text/ng-template" id="LikertFieldPreview">
+  </script>
+
+  <script type="text/ng-template" id="LikertFieldEdit">
+  </script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>
